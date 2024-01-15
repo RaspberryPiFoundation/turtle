@@ -483,7 +483,7 @@ class Screen(metaclass=Singleton):
         '''Ends the creation of a "scene" and has it displayed'''
         # removing animation used for timing purpose
         if not self._animate and self._timing_anim is not None:
-            self.svg_scene.removeChild(self._timing_anim)
+            self.svg_scene["children"] = list(filter(lambda c: c["props"].get("id") != self._timing_anim["props"]["id"], self.svg_scene["children"]))
             self._timing_anim = None
         if not self._scene_finished:
             for t in self._turtles:
