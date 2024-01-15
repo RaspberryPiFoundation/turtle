@@ -1,0 +1,5 @@
+#!/bin/bash
+
+python3 -m build
+cp dist/*.whl .
+rm -rf *.egg-info/ build/ dist/
