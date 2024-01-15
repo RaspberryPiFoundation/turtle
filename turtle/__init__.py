@@ -33,7 +33,7 @@ from . import svg as SVG
 
 
 def appendTo(root, node):
-    root.appendChild(node)
+    root["children"].append(node)
 
 
 # Even though it is a private object, use the same name for the configuration
