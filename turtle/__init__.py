@@ -165,7 +165,7 @@ class Screen(metaclass=Singleton):
             raise ValueError("Supported values are only 'on' and 'off'.")
 
     def _repr_svg_(self):
-        return self._old_svg_scene.outerHTML
+        return self._old_svg_scene
 
     def svg(self):
         return self._repr_svg_()
