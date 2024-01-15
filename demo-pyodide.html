@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Pyodide</title>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+  </head>
+  <body>
+    <textarea id="input" cols="80" rows="5">
+import turtle
+t = turtle.Turtle()
+t.forward(100)
+    </textarea>
+
+    <br/>
+    <button id="run" disabled>Run</button>
+
+    <pre id="info">Loading pyodide...</pre>
+    <div id="visual" style="width: fit-content;"></div>
+
+    <script type="module">
+      const runButton = document.getElementById("run");
+      const input = document.getElementById("input");
+      const info = document.getElementById("info");
+      const visual = document.getElementById("visual");
+
+      let pyodide;
+
+      const main = async () => {
+        pyodide = await loadPyodide();
+
+        pyodide.registerJsModule("basthon", fakeBasthonPackage)
+        await pyodide.loadPackage("./turtle-0.0.1-py3-none-any.whl")
+
+        runButton.disabled = false;
+        info.innerHTML = "";
+      };
+
+      const run = async () => {
+        try {
+          await pyodide.runPython(input.value);
+          await showScene();
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
+      const showScene = () => pyodide.runPython(`
+        import turtle
+        import basthon
+
+        svg_dict = turtle.Screen().show_scene()
+        basthon.kernel.display_event({ "display_type": "turtle", "content": svg_dict })
+        turtle.restart()
+      `);
+
+      const fakeBasthonPackage = {
+        kernel: {
+          display_event: (e) => visual.innerHTML = elementFromProps(e.toJs().get("content")).outerHTML,
+          locals: () => pyodide.runPython("globals()"),
+        },
+      };
+
+      const elementFromProps = (map) => {
+        const tag = map.get("tag");
+        if (!tag) { return document.createTextNode(map.get("text")); }
+
+        const node = document.createElement(map.get("tag"));
+
+        for (const [key, value] of map.get("props")) { node.setAttribute(key, value); }
+        for (const childProps of map.get("children")) { node.appendChild(elementFromProps(childProps)); }
+
+        return node;
+      }
+
+      main();
+      runButton.addEventListener("click", run);
+    </script>
+  </body>
+</html>
