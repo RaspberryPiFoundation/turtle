@@ -52,7 +52,7 @@ def _default_cfg():
         # "colormode": 1.0,
         # "delay": 10,
         # "undobuffersize": 1000,
-        "shape": "turtle",
+        "shape": "classic",
         "pencolor": "black",
         "fillcolor": "black",
         # "resizemode" : "noresize",
