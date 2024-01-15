@@ -14,11 +14,11 @@
 #
 # IMPORTANT: We use SVG for drawing turtles. If we have a turtle at an angle
 # of 350 degrees and we rotate it by an additional 20 degrees, we will have
-# a turtle at an angle of 370 degrees.  For turtles drawn periodically on 
+# a turtle at an angle of 370 degrees.  For turtles drawn periodically on
 # a screen (like typical animations, including the CPython turtle module),
 # drawing a turtle with a rotation of 370 degrees is the same as a rotation of
-# 10 degrees.  However, using SVG, if we "slowly" animate an object, 
-# rotating it from 350 to 370 degrees, the result will not be the same 
+# 10 degrees.  However, using SVG, if we "slowly" animate an object,
+# rotating it from 350 to 370 degrees, the result will not be the same
 # as rotating it from 350 to 10 degrees. For this reason, we did not use the
 # Vec2D class from the CPython module and handle the rotations quite differently.
 
@@ -89,7 +89,7 @@ class FormattedTuple(tuple):
 def create_circle(r):
     '''Creates a circle of radius r centered at the origin'''
     circle = SVG.circle(x=0, y=0, r=r, stroke="black", fill="black")
-    circle.setAttribute("stroke-width", 1)
+    circle["props"]["stroke-width"] = 1
     return circle
 
 
@@ -97,7 +97,7 @@ def create_polygon(points):
     '''Creates a polygon using the points provided'''
     points = ' '.join(','.join(map(str, p)) for p in points)
     polygon = SVG.polygon(points=points, stroke="black", fill="black")
-    polygon.setAttribute("stroke-width", 1)
+    polygon["props"]["stroke-width"] = 1
     return polygon
 
 
@@ -106,11 +106,11 @@ def create_rectangle(width=2, height=2, rx=None, ry=None):
        used to have rounded corners'''
     rectangle = SVG.rect(x=-width/2, y=-height/2, width=width,
                          height=height, stroke="black", fill="black")
-    rectangle.setAttribute("stroke-width", 1)
+    rectangle["props"]["stroke-width"] = 1
     if rx is not None:
-        rectangle.setAttribute("rx", rx)
+        rectangle["props"]["rx"] = rx
     if ry is not None:
-        rectangle.setAttribute("ry", ry)
+        rectangle["props"]["ry"] = ry
     return rectangle
 
 
@@ -208,19 +208,19 @@ class Screen(metaclass=Singleton):
         self.frame_index += 1
         rect = SVG.rect(x=x, y=y, width=width, height=height, fill=color)
         if self._animate:
-            rect.setAttribute('style', 'display: none;')
+            rect["props"]['style'] = 'display: none;'
             an = SVG.animate(Id=self.animation_frame_id(self.frame_index),
                              attributeName="display", attributeType="CSS",
                              From="block", to="block",
                              dur=_CFG["min_duration"], fill='freeze')
-            an.setAttribute('begin', self.animation_frame_id(self.frame_index - 1) + ".end")
+            an["props"]['begin'] = self.animation_frame_id(self.frame_index - 1) + ".end"
             appendTo(rect, an)
 
         appendTo(self.background_canvas, rect)
 
     def _convert_coordinates(self, x, y):
-        """In the browser, the increasing y-coordinate is towards the 
-           bottom of the screen; this is the opposite of what is assumed 
+        """In the browser, the increasing y-coordinate is towards the
+           bottom of the screen; this is the opposite of what is assumed
            normally for the methods in the CPython turtle module.
 
            This method makes the necessary orientation. It should be called
@@ -256,12 +256,12 @@ class Screen(metaclass=Singleton):
 
         circle = SVG.circle(cx=x, cy=y, r=radius, fill=color)
         if self._animate:
-            circle.setAttribute('style', 'display: none;')
+            circle["props"]['style'] = 'display: none;'
             an = SVG.animate(Id=self.animation_frame_id(self.frame_index),
                              attributeName="display", attributeType="CSS",
                              From="block", to="block",
                              dur=_CFG["min_duration"], fill='freeze')
-            an.setAttribute('begin', self.animation_frame_id(self.frame_index - 1) + ".end")
+            an["props"]['begin'] = self.animation_frame_id(self.frame_index - 1) + ".end"
             appendTo(circle, an)
         appendTo(self.canvas, circle)
 
@@ -306,7 +306,7 @@ class Screen(metaclass=Singleton):
             _line = SVG.line(x1=x0, y1=y0, x2=x1, y2=y1, style=style)
 
         if not drawing:
-            _line.setAttribute('opacity', 0)
+            _line["props"]['opacity'] = 0
 
         # always create one animation for timing purpose
         begin = self.animation_frame_id(self.frame_index) + ".end"
@@ -334,7 +334,7 @@ class Screen(metaclass=Singleton):
                                         dur=duration, fill='freeze')
                     appendTo(_line, _line_cap)
                 else:
-                    _line.setAttribute('stroke-linecap', 'round')
+                    _line["props"]['stroke-linecap'] = 'round'
 
         appendTo(self.canvas, _line)
         return begin, duration, (x0, y0), (x1, y1)
@@ -372,7 +372,7 @@ class Screen(metaclass=Singleton):
                              From="block", to="block",
                              dur=_CFG["min_duration"], fill='freeze')
 
-            an.setAttribute('begin', self.animation_frame_id(self.frame_index - 1) + ".end")
+            an["props"]['begin'] = self.animation_frame_id(self.frame_index - 1) + ".end"
             appendTo(polygon, an)
 
         appendTo(self.canvas, polygon)
@@ -518,13 +518,13 @@ class Screen(metaclass=Singleton):
                                'font-style': font[2]})
 
         if stroke is not None:
-            text.setAttribute('stroke', stroke)
+            text["props"]['stroke'] = stroke
         if align == 'left':
-            text.setAttribute('text-anchor', 'start')
+            text["props"]['text-anchor'] = 'start'
         elif align == 'center' or align == 'centre':
-            text.setAttribute('text-anchor', 'middle')
+            text["props"]['text-anchor'] = 'middle'
         elif align == 'right':
-            text.setAttribute('text-anchor', 'end')
+            text["props"]['text-anchor'] = 'end'
 
         self.frame_index += 1
         if self._animate:
@@ -532,7 +532,7 @@ class Screen(metaclass=Singleton):
                              attributeName="display", attributeType="CSS",
                              From="block", to="block",
                              dur=_CFG["min_duration"], fill='freeze')
-            an.setAttribute('begin', self.animation_frame_id(self.frame_index - 1) + ".end")
+            an["props"]['begin'] = self.animation_frame_id(self.frame_index - 1) + ".end"
             appendTo(text, an)
 
         appendTo(self.writing_canvas, text)
@@ -744,7 +744,7 @@ class TNavigator:
         if y is None:
             x, y = x[0], x[1]  # "*x" here raises SyntaxError
         # distance only needed to calculate the duration of
-        # the animation which is based on "distance" and "speed" as well. 
+        # the animation which is based on "distance" and "speed" as well.
         # We use the Manhattan distance here as it is *much* faster on Chrome,
         # than using the proper distance with calls to math.sqrt, while
         # giving acceptable results
@@ -1076,7 +1076,7 @@ class TPen:
                                    From=old_color, to=self._pencolor)
                 appendTo(self.svg, anim)
             else:
-                self.svg.setAttribute("stroke", self._pencolor)
+                self.svg["props"]["stroke"] = self._pencolor
         if "pensize" in p:
             self._pensize = p["pensize"]
         if "fillcolor" in p:
@@ -1090,7 +1090,7 @@ class TPen:
                                    From=old_color, to=self._fillcolor)
                 appendTo(self.svg, anim)
             else:
-                self.svg.setAttribute("fill", self._fillcolor)
+                self.svg["props"]["fill"] = self._fillcolor
         if "speed" in p:
             self._speed = p["speed"]
         if "shown" in p:
@@ -1109,7 +1109,7 @@ class TPen:
                                    From=old_opacity, to=opacity)
                 appendTo(self.svg, anim)
             else:
-                self.svg.setAttribute('opacity', opacity)
+                self.svg["props"]['opacity'] = opacity
             self.forward(0)  # updates the turtle visibility on screen
             self._shown = p["shown"]
 
@@ -1134,7 +1134,7 @@ class Turtle(TPen, TNavigator):
 
         self.name = shape
         self.svg, rotation = self.screen.create_svg_turtle(self, name=shape)
-        self.svg.setAttribute("opacity", 0)
+        self.svg["props"]["opacity"] = 0
         self._shown = False
         if visible:
             self.showturtle() # will ensure that turtle become visible at appropriate time
@@ -1247,10 +1247,7 @@ class Turtle(TPen, TNavigator):
                     dur=duration, begin=begin,
                     fill="freeze"))
             else:
-                self.svg.setAttribute(
-                    "transform",
-                    f"translate({_to[0]}, {_to[1]}) "
-                    f"rotate({self._old_heading}, 0, 0)")
+                self.svg["props"]["transform"] = f"translate({_to[0]}, {_to[1]}) rotate({self._old_heading}, 0, 0)"
 
         if self._fillpath is not None:
             self._fillpath.append((x, y))
@@ -1293,10 +1290,7 @@ class Turtle(TPen, TNavigator):
                     dur=duration, fill="freeze"))
             else:
                 x, y = self.screen._convert_coordinates(self._x, self._y)
-                self.svg.setAttribute(
-                    "transform",
-                    f"translate({x}, {y}) "
-                    f"rotate({new_heading}, 0, 0)")
+                self.svg["props"]["transform"] = f"translate({x}, {y}) rotate({new_heading}, 0, 0)"
         self._old_heading = new_heading
 
     def filling(self):
@@ -1390,9 +1384,9 @@ class Turtle(TPen, TNavigator):
         # 0 since there is no specific time associated with the creation of
         # such an object: we do not want to show it early.
         _turtle, rotation = self.screen.create_svg_turtle(self, name=name)
-        _turtle.setAttribute("opacity", 0 if self.screen._animate else 1)
-        _turtle.setAttribute("fill", self._fillcolor)
-        _turtle.setAttribute("stroke", self._pencolor)
+        _turtle["props"]["opacity"] = 0 if self.screen._animate else 1
+        _turtle["props"]["fill"] = self._fillcolor
+        _turtle["props"]["stroke"] = self._pencolor
 
         # We use timed animations to get it with the proper location, orientation
         # and appear at the desired time.
@@ -1424,10 +1418,8 @@ class Turtle(TPen, TNavigator):
                                           attributeType="XML",
                                           From=0, to=1))
         else:
-            _turtle.setAttribute("transform",
-                                 f"translate({x}, {y}) "
-                                 f"rotate({self._old_heading}, 0, 0)")
-            _turtle.setAttribute("opacity", "1")
+            _turtle["props"]["transform"] = f"translate({x}, {y}) rotate({self._old_heading}, 0, 0)"
+            _turtle["props"]["opacity"] = "1"
         return _turtle
 
     def stamp(self):
